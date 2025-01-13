@@ -1,7 +1,7 @@
 <template>
   <v-container class="fill-height">
     <v-responsive class="align-center fill-height mx-auto">
-      <div id="container"></div>
+      <div id="container" />
     </v-responsive>
   </v-container>
 </template>
@@ -10,6 +10,15 @@ import * as THREE from 'three'
 import TWEEN from 'three/addons/libs/tween.module.js'
 import { TrackballControls } from 'three/addons/controls/TrackBallControls.js'
 import { CSS3DRenderer, CSS3DObject } from 'three/addons/renderers/CSS3DRenderer.js'
+
+interface PersonData {
+  name: string;
+  photo: string;
+  age: number;
+  country: string;
+  interest: string;
+  netWorth: number;
+}
 
 const table = [
   'H', 'Hydrogen', '1.00794', 1, 1,
@@ -132,18 +141,15 @@ const table = [
   'Og', 'Oganesson', '(294)', 18, 7
 ];
 
-let camera, scene, renderer;
-let controls;
+let camera: THREE.PerspectiveCamera, scene: THREE.Scene, renderer: CSS3DRenderer;
+let controls: TrackballControls;
 
-const objects = [];
-const targets = { table: [], sphere: [], helix: [], grid: [] };
-
-init();
-animate();
+const objects: THREE.Object3D[] = [];
+const targets: { table: THREE.Object3D[], sphere: THREE.Object3D[], helix: THREE.Object3D[], grid: THREE.Object3D[] } = { table: [], sphere: [], helix: [], grid: [] };
 
 function init() {
 
-  camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 1, 10000);
+  camera = new THREE.PerspectiveCamera();
   camera.position.z = 3000;
 
   scene = new THREE.Scene();
@@ -155,15 +161,16 @@ function init() {
     const element = document.createElement('div');
     element.className = 'element';
     element.style.backgroundColor = 'rgba(0,127,127,' + (Math.random() * 0.5 + 0.25) + ')';
+    element.style.padding = '10px';
 
     const number = document.createElement('div');
     number.className = 'number';
-    number.textContent = (i / 5) + 1;
+    number.textContent = ((i / 5) + 1).toString();
     element.appendChild(number);
 
     const symbol = document.createElement('div');
     symbol.className = 'symbol';
-    symbol.textContent = table[i];
+    symbol.textContent = String(table[i]);
     element.appendChild(symbol);
 
     const details = document.createElement('div');
@@ -182,8 +189,12 @@ function init() {
     //
 
     const object = new THREE.Object3D();
-    object.position.x = (table[i + 3] * 140) - 1330;
-    object.position.y = - (table[i + 4] * 180) + 990;
+    const row = Math.floor(i / 20);
+    const col = i % 20;
+    object.position.x = (col * 140) - 1330;
+    object.position.y = - (row * 180) + 990;
+    // object.position.x = (Number(table[i + 3]) * 140) - 1330;
+    // object.position.y = - (Number(table[i + 4]) * 180) + 990;
 
     targets.table.push(object);
 
@@ -210,24 +221,30 @@ function init() {
 
   }
 
-  // helix
+  // double helix
 
   for (let i = 0, l = objects.length; i < l; i++) {
 
-    const theta = i * 0.175 + Math.PI;
-    const y = - (i * 8) + 450;
+    //Helix 1
+    const theta1 = i * 0.175 + Math.PI;
+    const y1 = - (i * 8) + 450;
+    const object1 = new THREE.Object3D();
+    object1.position.setFromCylindricalCoords(900, theta1, y1);
+    vector.x = object1.position.x * 2;
+    vector.y = object1.position.y;
+    vector.z = object1.position.z * 2;
 
-    const object = new THREE.Object3D();
+    //Helix 2
+    const theta2 = i * 0.175 + Math.PI * 2;
+    const y2 = - (i * 8) + 450;
+    const object2 = new THREE.Object3D();
+    object2.position.setFromCylindricalCoords(900, theta2, y2);
+    vector.x = object2.position.x * 2;
+    vector.y = object2.position.y;
+    vector.z = object2.position.z * 2;
+    object2.lookAt(vector);
 
-    object.position.setFromCylindricalCoords(900, theta, y);
-
-    vector.x = object.position.x * 2;
-    vector.y = object.position.y;
-    vector.z = object.position.z * 2;
-
-    object.lookAt(vector);
-
-    targets.helix.push(object);
+    targets.helix.push(i % 2 === 0 ? object1 : object2);
 
   }
 
@@ -245,13 +262,9 @@ function init() {
 
   }
 
-  //
-
   renderer = new CSS3DRenderer();
   renderer.setSize(window.innerWidth, window.innerHeight);
   document.body.appendChild(renderer.domElement);
-
-  //
 
   controls = new TrackballControls(camera, renderer.domElement);
   controls.minDistance = 500;
@@ -259,49 +272,47 @@ function init() {
   controls.addEventListener('change', render);
 
   const buttonTable = document.getElementById('table');
-  buttonTable.addEventListener('click', function () {
-
-    transform(targets.table, 2000);
-
-  });
+  if (buttonTable) {
+    buttonTable.addEventListener('click', function () {
+      transform(targets.table, 2000);
+    });
+  }
 
   const buttonSphere = document.getElementById('sphere');
-  buttonSphere.addEventListener('click', function () {
-
-    transform(targets.sphere, 2000);
-
-  });
+  if (buttonSphere) {
+    buttonSphere.addEventListener('click', function () {
+      transform(targets.sphere, 2000);
+    });
+  }
 
   const buttonHelix = document.getElementById('helix');
-  buttonHelix.addEventListener('click', function () {
-
-    transform(targets.helix, 2000);
-
-  });
+  if (buttonHelix) {
+    buttonHelix.addEventListener('click', function () {
+      transform(targets.helix, 2000);
+    });
+  }
 
   const buttonGrid = document.getElementById('grid');
-  buttonGrid.addEventListener('click', function () {
-
-    transform(targets.grid, 2000);
-
-  });
+  if (buttonGrid) {
+    buttonGrid.addEventListener('click', function () {
+      transform(targets.grid, 2000);
+    });
+  }
 
   transform(targets.table, 2000);
-
-  //
 
   window.addEventListener('resize', onWindowResize);
 
 }
 
-function transform(targets, duration) {
+function transform(this: unknown, targets: unknown[], duration: number) {
 
   TWEEN.removeAll();
 
   for (let i = 0; i < objects.length; i++) {
 
     const object = objects[i];
-    const target = targets[i];
+    const target = targets[i] as THREE.Object3D;
 
     new TWEEN.Tween(object.position)
       .to({ x: target.position.x, y: target.position.y, z: target.position.z }, Math.random() * duration + duration)
@@ -315,7 +326,7 @@ function transform(targets, duration) {
 
   }
 
-  new TWEEN.Tween(this)
+  new TWEEN.Tween({})
     .to({}, duration * 2)
     .onUpdate(render)
     .start();
@@ -348,4 +359,43 @@ function render() {
   renderer.render(scene, camera);
 
 }
+
+init();
+animate();
 </script>
+<style scoped>
+.element {
+  width: 120px;
+  height: 160px;
+  box-shadow: 0px 0px 12px rgba(0, 255, 255, 0.5);
+  border: 1px solid rgba(127, 255, 255, 0.25);
+  font-family: Helvetica, sans-serif;
+  text-align: center;
+  cursor: default;
+}
+
+.element:hover {
+  box-shadow: 0px 0px 12px rgba(0, 255, 255, 0.75);
+  border: 1px solid rgba(127, 255, 255, 0.75);
+}
+
+.element .symbol {
+  position: absolute;
+  top: 40px;
+  left: 0px;
+  right: 0px;
+  font-size: 60px;
+  font-weight: bold;
+  color: rgba(255, 255, 255, 0.75);
+  text-shadow: 0 0 10px rgba(0, 255, 255, 0.95);
+}
+
+.element .details {
+  position: absolute;
+  bottom: 15px;
+  left: 0px;
+  right: 0px;
+  font-size: 12px;
+  color: rgba(127, 255, 255, 0.75);
+}
+</style>
