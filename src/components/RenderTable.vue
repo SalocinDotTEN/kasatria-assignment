@@ -1,27 +1,12 @@
 <template>
   <v-container class="fill-height">
     <v-responsive class="align-center fill-height mx-auto">
-      <div id="info">
-        <a
-          href="https://threejs.org"
-          target="_blank"
-          rel="noopener"
-        >three.js</a> css3d - periodic table.
-      </div>
       <div id="container" />
       <div id="menu">
-        <v-btn @click="transform(targets.table, 2000)">
-          TABLE
-        </v-btn>
-        <v-btn @click="transform(targets.sphere, 2000)">
-          SPHERE
-        </v-btn>
-        <v-btn @click="transform(targets.helix, 2000)">
-          HELIX
-        </v-btn>
-        <v-btn @click="transform(targets.grid, 2000)">
-          GRID
-        </v-btn>
+        <v-btn @click="transform(targets.table, 2000)"> TABLE </v-btn>
+        <v-btn @click="transform(targets.sphere, 2000)"> SPHERE </v-btn>
+        <v-btn @click="transform(targets.helix, 2000)"> HELIX </v-btn>
+        <v-btn @click="transform(targets.grid, 2000)"> GRID </v-btn>
       </div>
     </v-responsive>
   </v-container>
@@ -162,7 +147,7 @@ export default defineComponent({
       'Lv', 'Livermorium', '(293)', 16, 7,
       'Ts', 'Tennessine', '(294)', 17, 7,
       'Og', 'Oganesson', '(294)', 18, 7
-      ];
+    ];
 
     onMounted(() => {
       init();
@@ -173,8 +158,116 @@ export default defineComponent({
       camera.value = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 1, 10000);
       camera.value.position.z = 3000;
 
-      // table, sphere, helix, grid initialization
-      // ...
+      scene.value = new THREE.Scene();
+
+      // table
+
+      for (let i = 0; i < table.length; i += 5) {
+
+        const element = document.createElement('div');
+        element.className = 'element';
+        element.style.backgroundColor = 'rgba(0,127,127,' + (Math.random() * 0.5 + 0.25) + ')';
+
+        const number = document.createElement('div');
+        number.className = 'number';
+        number.textContent = ((i / 5) + 1).toString();
+        element.appendChild(number);
+
+        const symbol = document.createElement('div');
+        symbol.className = 'symbol';
+        symbol.textContent = String(table[i]);
+        element.appendChild(symbol);
+
+        const details = document.createElement('div');
+        details.className = 'details';
+        details.innerHTML = table[i + 1] + '<br>' + table[i + 2];
+        element.appendChild(details);
+
+        const objectCSS = new CSS3DObject(element);
+        objectCSS.position.x = Math.random() * 4000 - 2000;
+        objectCSS.position.y = Math.random() * 4000 - 2000;
+        objectCSS.position.z = Math.random() * 4000 - 2000;
+        scene.value.add(objectCSS);
+
+        objects.push(objectCSS);
+
+        //Modified according to project requirement 20x10 table.
+        const object = new THREE.Object3D();
+        const row = Math.floor(i / 20);
+        const col = i % 20;
+        object.position.x = (col * 140) - 1330;
+        object.position.y = - (row * 180) + 990;
+
+        targets.table.push(object);
+
+      }
+
+      // sphere
+
+      const vector = new THREE.Vector3();
+
+      for (let i = 0, l = objects.length; i < l; i++) {
+
+        const phi = Math.acos(- 1 + (2 * i) / l);
+        const theta = Math.sqrt(l * Math.PI) * phi;
+
+        const object = new THREE.Object3D();
+
+        object.position.setFromSphericalCoords(800, phi, theta);
+
+        vector.copy(object.position).multiplyScalar(2);
+
+        object.lookAt(vector);
+
+        targets.sphere.push(object);
+
+      }
+
+      // helix
+      for (let i = 0, l = objects.length; i < l; i++) {
+        // Helix 1
+        const theta1 = i * 0.175 + Math.PI
+        const y1 = -(i * 8) + 450
+
+        const object1 = new THREE.Object3D()
+        object1.position.setFromCylindricalCoords(900, theta1, y1)
+
+        vector.x = object1.position.x * 2
+        vector.y = object1.position.y
+        vector.z = object1.position.z * 2
+
+        object1.lookAt(vector)
+
+        // Helix 2
+        const theta2 = i * 0.175 + Math.PI * 2
+        const y2 = -(i * 8) + 450
+
+        const object2 = new THREE.Object3D()
+        object2.position.setFromCylindricalCoords(900, theta2, y2)
+
+        vector.x = object2.position.x * 2
+        vector.y = object2.position.y
+        vector.z = object2.position.z * 2
+
+        object2.lookAt(vector)
+
+        // Alternate between first and second helix
+        targets.helix.push(i % 2 === 0 ? object1 : object2)
+      }
+
+      // grid
+
+      for (let i = 0; i < objects.length; i++) {
+
+        const object = new THREE.Object3D();
+
+        object.position.x = ((i % 5) * 400) - 800;
+        object.position.y = (- (Math.floor(i / 5) % 5) * 400) + 800;
+        object.position.z = (Math.floor(i / 25)) * 1000 - 2000;
+
+        targets.grid.push(object);
+
+      }
 
       renderer.value = new CSS3DRenderer();
       renderer.value.setSize(window.innerWidth, window.innerHeight);
