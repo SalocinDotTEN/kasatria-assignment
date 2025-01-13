@@ -17,6 +17,8 @@ import * as THREE from 'three';
 import TWEEN from 'three/addons/libs/tween.module.js'
 import { TrackballControls } from 'three/addons/controls/TrackBallControls.js'
 import { CSS3DRenderer, CSS3DObject } from 'three/addons/renderers/CSS3DRenderer.js'
+import { GoogleSpreadsheet } from 'google-spreadsheet'
+import { JWT } from 'google-auth-library'
 
 export default defineComponent({
   setup() {
@@ -27,6 +29,23 @@ export default defineComponent({
 
     const objects: CSS3DObject[] = [];
     const targets: { table: THREE.Object3D[]; sphere: THREE.Object3D[]; helix: THREE.Object3D[]; grid: THREE.Object3D[] } = { table: [], sphere: [], helix: [], grid: [] };
+
+    console.log(process.env.VUE_APP_GOOGLE_SERVICE_ACCOUNT)
+    console.log(process.env.VUE_APP_GOOGLE_API_KEY)
+
+    // const serviceAccountAuth = new JWT({
+    //   email: process.env.VUE_APP_GOOGLE_SERVICE_ACCOUNT,
+    //   key: process.env.VUE_APP_GOOGLE_API_KEY,
+    //   scopes: ['https://www.googleapis.com/auth/spreadsheets.readonly'],
+    // });
+
+    // const dataFile = new GoogleSpreadsheet('1iCUEbsGrDXXk8lgClNpiSA6Dm8ZCLQDReIKCD4L_HCY', serviceAccountAuth);
+    // (async () => {
+    //   await dataFile.loadInfo();
+    //   const sheet = dataFile.sheetsByIndex[0];
+    //   const sheetData = await sheet.getRows();
+    //   console.log(sheetData);
+    // })();
 
     const table = [
       'H', 'Hydrogen', '1.00794', 1, 1,
