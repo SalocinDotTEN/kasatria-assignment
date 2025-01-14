@@ -17,19 +17,7 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
   return {
     plugins: [
-      nodePolyfills({
-        include: ['buffer', 'stream', 'util', 'path'],
-        exclude: ['http'],
-        globals: {
-          process: true,
-          Buffer: true,
-          global: true,
-        },
-        overrides: {
-          fs: 'memfs',
-        },
-        protocolImports: true,
-      }),
+      nodePolyfills(),
       VueRouter({
         dts: 'src/typed-router.d.ts',
       }),
