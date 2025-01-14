@@ -30,8 +30,8 @@ export default defineComponent({
     const objects: CSS3DObject[] = [];
     const targets: { table: THREE.Object3D[]; sphere: THREE.Object3D[]; helix: THREE.Object3D[]; grid: THREE.Object3D[] } = { table: [], sphere: [], helix: [], grid: [] };
 
-    console.log(process.env.VUE_APP_GOOGLE_SERVICE_ACCOUNT)
-    console.log(process.env.VUE_APP_GOOGLE_API_KEY)
+    console.log(import.meta.env.VUE_APP_GOOGLE_SERVICE_ACCOUNT)
+    console.log(import.meta.env.VUE_APP_GOOGLE_API_KEY)
 
     // const serviceAccountAuth = new JWT({
     //   email: process.env.VUE_APP_GOOGLE_SERVICE_ACCOUNT,
