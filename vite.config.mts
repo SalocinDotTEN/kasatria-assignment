@@ -17,7 +17,13 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
   return {
     plugins: [
-      nodePolyfills(),
+      nodePolyfills({
+        globals: {
+          Buffer: true,
+          global: true,
+          process: true,
+        },
+      }),
       VueRouter({
         dts: 'src/typed-router.d.ts',
       }),
@@ -58,6 +64,7 @@ export default defineConfig(({ mode }) => {
       }),
     ],
     define: {
+      'process.browser': true,
       'process.env': {},
       __APP_ENV__: JSON.stringify(env.APP_ENV),
     },
