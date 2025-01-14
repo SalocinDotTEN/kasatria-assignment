@@ -6,6 +6,7 @@ import Layouts from 'vite-plugin-vue-layouts'
 import Vue from '@vitejs/plugin-vue'
 import VueRouter from 'unplugin-vue-router/vite'
 import Vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
+import { nodePolyfills } from 'vite-plugin-node-polyfills'
 
 // Utilities
 import { defineConfig, loadEnv } from 'vite'
@@ -16,6 +17,19 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
   return {
     plugins: [
+      nodePolyfills({
+        include: ['buffer', 'stream', 'util', 'path'],
+        exclude: ['http'],
+        globals: {
+          process: true,
+          Buffer: true,
+          global: true,
+        },
+        overrides: {
+          fs: 'memfs',
+        },
+        protocolImports: true,
+      }),
       VueRouter({
         dts: 'src/typed-router.d.ts',
       }),

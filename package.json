@@ -19,6 +19,7 @@
     "google-spreadsheet": "^4.1.4",
     "roboto-fontface": "*",
     "three": "^0.172.0",
+    "vite-plugin-node-polyfills": "^0.22.0",
     "vue": "^3.4.31",
     "vuetify": "^3.6.14"
   },
