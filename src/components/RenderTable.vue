@@ -12,7 +12,7 @@
   </v-container>
 </template>
 <script lang="ts">
-import { defineComponent, onMounted, ref } from 'vue';
+import { defineComponent, onMounted, ref, computed } from 'vue';
 import * as THREE from 'three';
 import TWEEN from 'three/addons/libs/tween.module.js'
 import { TrackballControls } from 'three/addons/controls/TrackBallControls.js'
@@ -30,10 +30,10 @@ export default defineComponent({
     const objects: CSS3DObject[] = [];
     const targets: { table: THREE.Object3D[]; sphere: THREE.Object3D[]; helix: THREE.Object3D[]; grid: THREE.Object3D[] } = { table: [], sphere: [], helix: [], grid: [] };
 
-    const sheetData = ref([])
+    const sheetData = ref<{ name: string; photo: string; age: string; country: string; interest: string; netWorth: number }[]>([])
     const loading = ref(false)
     const error = ref(null)
-    const table = ref([])
+    const table = ref<unknown[]>([])
 
     const fetchSheetData = async () => {
       try {
@@ -61,7 +61,7 @@ export default defineComponent({
           interest: row.get('Interest') || '',
           netWorth: parseFloat(row.get('Net Worth').replace('$','').replace(',','')) || 0
         }))
-        return sheetData.value
+        // return sheetData.value
         // console.log('Fetched data:', sheetData.value)
       } catch (err) {
         error.value = err.message
@@ -71,19 +71,18 @@ export default defineComponent({
       }
     }
 
-    const initData = async () => {
-      const data = await fetchSheetData()
-      if (data) {
-        table.value = data.map(item => [
-          item.photo,
-          item.name,
-          item.interest,
-          item.country,
-          item.age,
-          item.netWorth,
-        ]).flat()
-      }
-    }
+    const tableData = computed(() => {
+      return sheetData.value?.map(row => ({
+        name: row.name,
+        photo: row.photo,
+        age: row.age,
+        country: row.country,
+        interest: row.interest,
+        net_worth: row.netWorth
+      })) || []
+    })
+
+    console.log('Table data:', tableData)
 
     // const table = [
     //   'H', 'Hydrogen', '1.00794', 1, 1,
@@ -207,7 +206,7 @@ export default defineComponent({
     // ];
 
     onMounted(() => {
-      initData();
+      fetchSheetData();
       init();
       animate();
     });
