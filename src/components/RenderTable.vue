@@ -3,10 +3,18 @@
     <v-responsive class="align-center fill-height mx-auto">
       <div id="container" />
       <div id="menu">
-        <v-btn @click="transform(targets.table, 2000)"> TABLE </v-btn>
-        <v-btn @click="transform(targets.sphere, 2000)"> SPHERE </v-btn>
-        <v-btn @click="transform(targets.helix, 2000)"> HELIX </v-btn>
-        <v-btn @click="transform(targets.grid, 2000)"> GRID </v-btn>
+        <v-btn @click="transform(targets.table, 2000)">
+          TABLE
+        </v-btn>
+        <v-btn @click="transform(targets.sphere, 2000)">
+          SPHERE
+        </v-btn>
+        <v-btn @click="transform(targets.helix, 2000)">
+          HELIX
+        </v-btn>
+        <v-btn @click="transform(targets.grid, 2000)">
+          GRID
+        </v-btn>
       </div>
     </v-responsive>
   </v-container>
@@ -18,9 +26,7 @@ import TWEEN from 'three/examples/jsm/libs/tween.module.js'
 import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls.js'
 import { CSS3DRenderer, CSS3DObject } from 'three/examples/jsm/renderers/CSS3DRenderer.js'
 import { JWT } from 'google-auth-library'
-import { GoogleSpreadsheet, GoogleSpreadsheetRow } from 'google-spreadsheet'
-
-let tbl = null
+import { GoogleSpreadsheet } from 'google-spreadsheet'
 
 export default defineComponent({
   setup() {
@@ -78,12 +84,10 @@ export default defineComponent({
 
     onMounted(() => {
       fetchSheetData().then((data) => {
-        // tbl = data
         init(data);
       }).catch((err) => {
         console.error(err)
       })
-      // fetchSheetData();
       animate();
     });
 
