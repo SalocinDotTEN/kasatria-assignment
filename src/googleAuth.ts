@@ -1,6 +1,9 @@
 import { OAuth2Client } from 'google-auth-library';
 
-const client = new OAuth2Client(import.meta.env.VITE_GOOGLE_AUTH_CLIENT_ID, '', import.meta.env.VITE_GOOGLE_AUTH_REDIRECT_URI)
+const client = new OAuth2Client(
+  import.meta.env.VITE_GOOGLE_AUTH_CLIENT_ID,
+  import.meta.env.VITE_GOOGLE_AUTH_CLIENT_SECRET,
+  import.meta.env.VITE_GOOGLE_AUTH_REDIRECT_URI)
 
 const signInWithGoogle = async () => {
   const authUrl = client.generateAuthUrl({
@@ -12,7 +15,7 @@ const signInWithGoogle = async () => {
 }
 
 const handleAuthCallback = async (code: string) => {
-  const { tokens } = await client.getToken(code);
+  const { tokens } = await client.getToken({code, redirect_uri: import.meta.env.VITE_GOOGLE_AUTH_REDIRECT_URI});
   client.setCredentials(tokens);
   return tokens;
 }
