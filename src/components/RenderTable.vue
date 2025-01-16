@@ -43,7 +43,7 @@ export default defineComponent({
     const error = ref('')
 
     const fetchSheetData = async () => {
-      // try {
+      try {
         // loading.value = true
         const serviceAccountAuth = new JWT({
           email: import.meta.env.VITE_GOOGLE_SERVICE_ACCOUNT,
@@ -72,16 +72,16 @@ export default defineComponent({
         console.log('Sheet data:', sheetData.value)
 
         return sheetData.value
-      // } catch (err) {
-      //   if (err instanceof Error) {
-      //     error.value = err.message;
-      //   } else {
-      //     error.value = String(err);
-      //   }
-      //   console.error('Error fetching sheet data:', err)
-      // } finally {
-      //   loading.value = false
-      // }
+      } catch (err) {
+        if (err instanceof Error) {
+          error.value = err.message;
+        } else {
+          error.value = String(err);
+        }
+        console.error('Error fetching sheet data:', err)
+      } finally {
+        // loading.value = false
+      }
     }
 
     onMounted(() => {
