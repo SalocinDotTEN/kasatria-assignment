@@ -2,17 +2,32 @@
   <v-container class="fill-height">
     <v-responsive class="align-center fill-height mx-auto">
       <div v-if="!user">
-        <v-btn color="primary" @click="login"> Login with Google </v-btn>
+        <v-btn
+          color="primary"
+          @click="login"
+        >
+          Login with Google
+        </v-btn>
       </div>
       <div v-else>
         <div id="container" />
         <div id="menu">
-          <v-btn @click="transform(targets.table, 2000)"> TABLE </v-btn>
-          <v-btn @click="transform(targets.sphere, 2000)"> SPHERE </v-btn>
-          <v-btn @click="transform(targets.helix, 2000)"> HELIX </v-btn>
-          <v-btn @click="transform(targets.grid, 2000)"> GRID </v-btn>
+          <v-btn @click="transform(targets.table, 2000)">
+            TABLE
+          </v-btn>
+          <v-btn @click="transform(targets.sphere, 2000)">
+            SPHERE
+          </v-btn>
+          <v-btn @click="transform(targets.helix, 2000)">
+            HELIX
+          </v-btn>
+          <v-btn @click="transform(targets.grid, 2000)">
+            GRID
+          </v-btn>
           <div id="legend">
-            <div class="legend-gradient"> Net Worth Range </div>
+            <div class="legend-gradient">
+              Net Worth Range
+            </div>
             <div class="legend-labels">
               <span>&lt; RM 100k</span>
               <span>RM 100k</span>
@@ -31,13 +46,13 @@ import * as THREE from 'three';
 import TWEEN from 'three/examples/jsm/libs/tween.module.js'
 import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls.js'
 import { CSS3DRenderer, CSS3DObject } from 'three/examples/jsm/renderers/CSS3DRenderer.js'
-import { JWT } from 'google-auth-library'
+import { JWT, type Credentials } from 'google-auth-library'
 import { GoogleSpreadsheet } from 'google-spreadsheet'
 
 export default defineComponent({
   setup() {
     //Google login stuffs
-    const user = ref(null)
+    const user = ref<null | Credentials>(null)
     const login = async () => {
       try {
         await signInWithGoogle()
