@@ -46,8 +46,8 @@ export default defineComponent({
       try {
         loading.value = true
         const serviceAccountAuth = new JWT({
-          email: import.meta.env.VITE_GOOGLE_SERVICE_ACCOUNT,
-          key: import.meta.env.VITE_GOOGLE_API_KEY,
+          email: import.meta.env.VITE_GOOGLE_SERVICE_ACCOUNT ? import.meta.env.VITE_GOOGLE_SERVICE_ACCOUNT : process.env.VITE_GOOGLE_SERVICE_ACCOUNT,
+          key: import.meta.env.VITE_GOOGLE_API_KEY ? import.meta.env.VITE_GOOGLE_API_KEY : process.env.VITE_GOOGLE_API_KEY,
           scopes: ['https://www.googleapis.com/auth/spreadsheets.readonly'],
         })
 
