@@ -1,28 +1,23 @@
 <template>
   <v-container class="fill-height">
     <v-responsive class="align-center fill-height mx-auto">
-      <div id="container" />
-      <div id="menu">
-        <v-btn @click="transform(targets.table, 2000)">
-          TABLE
-        </v-btn>
-        <v-btn @click="transform(targets.sphere, 2000)">
-          SPHERE
-        </v-btn>
-        <v-btn @click="transform(targets.helix, 2000)">
-          HELIX
-        </v-btn>
-        <v-btn @click="transform(targets.grid, 2000)">
-          GRID
-        </v-btn>
-        <div id="legend">
-          <div class="legend-gradient">
-            Net Worth Range
-          </div>
-          <div class="legend-labels">
-            <span>&lt; RM 100k</span>
-            <span>RM 100k</span>
-            <span>&gt; RM 200k</span>
+      <div v-if="!user">
+        <v-btn color="primary" @click="login"> Login with Google </v-btn>
+      </div>
+      <div v-else>
+        <div id="container" />
+        <div id="menu">
+          <v-btn @click="transform(targets.table, 2000)"> TABLE </v-btn>
+          <v-btn @click="transform(targets.sphere, 2000)"> SPHERE </v-btn>
+          <v-btn @click="transform(targets.helix, 2000)"> HELIX </v-btn>
+          <v-btn @click="transform(targets.grid, 2000)"> GRID </v-btn>
+          <div id="legend">
+            <div class="legend-gradient"> Net Worth Range </div>
+            <div class="legend-labels">
+              <span>&lt; RM 100k</span>
+              <span>RM 100k</span>
+              <span>&gt; RM 200k</span>
+            </div>
           </div>
         </div>
       </div>
@@ -31,6 +26,7 @@
 </template>
 <script lang="ts">
 import { defineComponent, onMounted, ref } from 'vue';
+import { signInWithGoogle, handleAuthCallback } from "../googleAuth";
 import * as THREE from 'three';
 import TWEEN from 'three/examples/jsm/libs/tween.module.js'
 import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls.js'
@@ -40,6 +36,45 @@ import { GoogleSpreadsheet } from 'google-spreadsheet'
 
 export default defineComponent({
   setup() {
+    //Google login stuffs
+    const user = ref(null)
+    const login = async () => {
+      try {
+        await signInWithGoogle()
+      } catch (error) {
+        console.error('There has been an error logging in... ', error)
+      }
+    }
+    const logout = () => {
+      user.value = null //Clear out tokens and whatever logout.
+    }
+    const handleCallback = async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const code = urlParams.get('code');
+      if (code) {
+        try {
+          const tokens = await handleAuthCallback(code);
+          user.value = tokens;
+          // Remove the code from the URL
+          window.history.replaceState({}, document.title, window.location.pathname);
+        } catch (error) {
+          console.error('Error handling auth callback:', error);
+        }
+      }
+    };
+
+    onMounted(() => {
+      handleCallback();
+      if (user.value) {
+        fetchSheetData().then((data) => {
+          init(data);
+        }).catch((err) => {
+          console.error(err)
+        })
+        animate();
+      }
+    });
+
     const camera = ref<THREE.PerspectiveCamera>();
     const scene = ref(new THREE.Scene());
     const renderer = ref<CSS3DRenderer>();
@@ -93,15 +128,6 @@ export default defineComponent({
         // loading.value = false
       }
     }
-
-    onMounted(() => {
-      fetchSheetData().then((data) => {
-        init(data);
-      }).catch((err) => {
-        console.error(err)
-      })
-      animate();
-    });
 
     function init(tableInput: { name: string; photo: string; age: string; country: string; interest: string; netWorth: number }[] = []) {
       camera.value = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 1, 10000);
@@ -322,7 +348,9 @@ export default defineComponent({
     }
 
     return {
-      //loading,
+      user,
+      login,
+      logout,
       error,
       sheetData,
       transform,
@@ -359,6 +387,7 @@ a {
   box-shadow: 0px 0px 12px rgba(255, 255, 255, 0.801);
   border: 1px solid rgba(255, 255, 255, 0.75);
 }
+
 .element .country {
   position: absolute;
   top: 10px;
