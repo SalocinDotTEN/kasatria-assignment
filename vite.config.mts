@@ -95,10 +95,5 @@ export default defineConfig(({ mode }) => {
         },
       },
     },
-    build: {
-      rollupOptions: {
-        external: ['three/addons/libs/tween.module.js', 'three/examples/jsm/controls/TrackBallControls.js', 'three/examples/jsm/renderers/CSS3DRenderer.js'],
-      },
-    },
   }
 })

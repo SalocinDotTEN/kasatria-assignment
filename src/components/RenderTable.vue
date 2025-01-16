@@ -14,8 +14,8 @@
 <script lang="ts">
 import { defineComponent, onMounted, ref } from 'vue';
 import * as THREE from 'three';
-import TWEEN from 'three/addons/libs/tween.module.js'
-import { TrackballControls } from 'three/examples/jsm/controls/TrackBallControls.js'
+import TWEEN from 'three/examples/jsm/libs/tween.module.js'
+import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls.js'
 import { CSS3DRenderer, CSS3DObject } from 'three/examples/jsm/renderers/CSS3DRenderer.js'
 import { JWT } from 'google-auth-library'
 import { GoogleSpreadsheet, GoogleSpreadsheetRow } from 'google-spreadsheet'
