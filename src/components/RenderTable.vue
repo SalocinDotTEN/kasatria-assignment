@@ -12,7 +12,7 @@
   </v-container>
 </template>
 <script lang="ts">
-import { defineComponent, onMounted, ref, computed } from 'vue';
+import { defineComponent, onMounted, ref } from 'vue';
 import * as THREE from 'three';
 import TWEEN from 'three/addons/libs/tween.module.js'
 import { TrackballControls } from 'three/addons/controls/TrackBallControls.js'
@@ -34,8 +34,7 @@ export default defineComponent({
 
     const sheetData = ref<{ name: string; photo: string; age: string; country: string; interest: string; netWorth: number }[]>([])
     const loading = ref(false)
-    const error = ref(null)
-    const table = ref<unknown[]>([])
+    const error = ref('')
 
     const fetchSheetData = async () => {
       try {
@@ -66,7 +65,11 @@ export default defineComponent({
 
         return sheetData.value
       } catch (err) {
-        error.value = err.message
+        if (err instanceof Error) {
+          error.value = err.message;
+        } else {
+          error.value = String(err);
+        }
         console.error('Error fetching sheet data:', err)
       } finally {
         loading.value = false
@@ -84,7 +87,7 @@ export default defineComponent({
       animate();
     });
 
-    function init(tableInput = []) {
+    function init(tableInput: { name: string; photo: string; age: string; country: string; interest: string; netWorth: number }[] = []) {
       camera.value = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 1, 10000);
       camera.value.position.z = 3000;
 
