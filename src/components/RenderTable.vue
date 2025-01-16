@@ -44,14 +44,10 @@ export default defineComponent({
 
     const fetchSheetData = async () => {
       try {
-        console.log(process.env.VITE_GOOGLE_SERVICE_ACCOUNT)
-        console.log(process.env.VITE_GOOGLE_API_KEY)
-        console.log(import.meta.env.VITE_GOOGLE_SERVICE_ACCOUNT)
-        console.log(import.meta.env.VITE_GOOGLE_API_KEY)
         loading.value = true
         const serviceAccountAuth = new JWT({
-          email: import.meta.env.VITE_GOOGLE_SERVICE_ACCOUNT ? import.meta.env.VITE_GOOGLE_SERVICE_ACCOUNT : process.env.VITE_GOOGLE_SERVICE_ACCOUNT,
-          key: import.meta.env.VITE_GOOGLE_API_KEY ? import.meta.env.VITE_GOOGLE_API_KEY : process.env.VITE_GOOGLE_API_KEY,
+          email: import.meta.env.VITE_GOOGLE_SERVICE_ACCOUNT,
+          key: import.meta.env.VITE_GOOGLE_API_KEY,
           scopes: ['https://www.googleapis.com/auth/spreadsheets.readonly'],
         })
 
@@ -72,6 +68,8 @@ export default defineComponent({
           interest: row.get('Interest') || '',
           netWorth: parseFloat(row.get('Net Worth').replace('$', '').replace(',', '')) || 0
         }))
+
+        console.log('Sheet data:', sheetData.value)
 
         return sheetData.value
       } catch (err) {
