@@ -56,6 +56,12 @@ export default defineComponent({
     const login = async () => {
       try {
         await signInWithGoogle()
+        fetchSheetData().then((data) => {
+          init(data);
+        }).catch((err) => {
+          console.error(err)
+        })
+        animate();
       } catch (error) {
         console.error('There has been an error logging in... ', error)
       }
@@ -77,18 +83,6 @@ export default defineComponent({
         }
       }
     };
-
-    onMounted(() => {
-      handleCallback();
-      if (user.value) {
-        fetchSheetData().then((data) => {
-          init(data);
-        }).catch((err) => {
-          console.error(err)
-        })
-        animate();
-      }
-    });
 
     const camera = ref<THREE.PerspectiveCamera>();
     const scene = ref(new THREE.Scene());
@@ -361,6 +355,18 @@ export default defineComponent({
         renderer.value.render(scene.value, camera.value);
       }
     }
+
+    onMounted(() => {
+      handleCallback();
+      // if (user.value) {
+        fetchSheetData().then((data) => {
+          init(data);
+        }).catch((err) => {
+          console.error(err)
+        })
+        animate();
+      // }
+    });
 
     return {
       user,
