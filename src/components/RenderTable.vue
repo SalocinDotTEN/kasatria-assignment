@@ -94,8 +94,6 @@ export default defineComponent({
 
       tableInput.forEach((renderRow, i) => {
 
-        console.log('Net worth: ', renderRow.netWorth)
-
         const element = document.createElement('div');
         element.className = 'element';
         let bgColor, borderColor;
@@ -109,7 +107,6 @@ export default defineComponent({
           bgColor = 'rgba(58, 159, 72, 0.5)';
           borderColor = 'rgba(58, 159, 72)';
         }
-        // element.style.backgroundColor = 'rgba(0,127,127,' + (Math.random() * 0.5 + 0.25) + ')';
         element.style.backgroundColor = bgColor;
         element.style.border = '1px solid ' + borderColor;
 
