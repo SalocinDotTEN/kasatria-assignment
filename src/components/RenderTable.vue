@@ -24,6 +24,9 @@
           <v-btn @click="transform(targets.grid, 2000)">
             GRID
           </v-btn>
+          <v-btn @click="logout">
+            Logout
+          </v-btn>
           <div id="legend">
             <div class="legend-gradient">
               Net Worth Range
