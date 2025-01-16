@@ -15,6 +15,16 @@
         <v-btn @click="transform(targets.grid, 2000)">
           GRID
         </v-btn>
+        <div id="legend">
+          <div class="legend-gradient">
+            Net Worth Range
+          </div>
+          <div class="legend-labels">
+            <span>&lt; RM 100k</span>
+            <span>RM 100k</span>
+            <span>&gt; RM 200k</span>
+          </div>
+        </div>
       </div>
     </v-responsive>
   </v-container>
@@ -98,24 +108,51 @@ export default defineComponent({
       camera.value.position.z = 3000;
 
       scene.value = new THREE.Scene();
+      // Define min and max colors
+      const minColour = { r: 239, g: 48, b: 34 }; // #EF3022
+      const midColour = { r: 253, g: 202, b: 53 }; // #FDCA35
+      const maxColour = { r: 58, g: 159, b: 72 }; // #3A9F48
+
+      // Function to interpolate between two colors
+      function interpolateColor(colour1: { r: number; g: number; b: number; }, colour2: { r: number; g: number; b: number; }, factor: number, background: boolean) {
+        const result = {
+          r: Math.round(colour1.r + factor * (colour2.r - colour1.r)),
+          g: Math.round(colour1.g + factor * (colour2.g - colour1.g)),
+          b: Math.round(colour1.b + factor * (colour2.b - colour1.b)),
+        };
+        if (background) {
+          return `rgba(${result.r}, ${result.g}, ${result.b}, 0.5)`;
+        } else {
+          return `rgb(${result.r}, ${result.g}, ${result.b})`;
+        }
+      }
 
       // table
-
       tableInput.forEach((renderRow, i) => {
 
         const element = document.createElement('div');
         element.className = 'element';
         let bgColor, borderColor;
         if (renderRow.netWorth <= 100000) {
-          bgColor = 'rgba(239, 48, 34, 0.5)';
-          borderColor = 'rgba(239, 48, 34)';
-        } else if (renderRow.netWorth < 200000) {
-          bgColor = 'rgba(253, 202, 53, 0.5)';
-          borderColor = 'rgba(253, 202, 53)';
+          bgColor = interpolateColor(minColour, midColour, renderRow.netWorth / 100000, true);
+          borderColor = interpolateColor(minColour, midColour, renderRow.netWorth / 100000, false);
+        } else if (renderRow.netWorth <= 200000) {
+          bgColor = interpolateColor(midColour, maxColour, (renderRow.netWorth - 100000) / 100000, true);
+          borderColor = interpolateColor(midColour, maxColour, (renderRow.netWorth - 100000) / 100000, false);
         } else {
-          bgColor = 'rgba(58, 159, 72, 0.5)';
-          borderColor = 'rgba(58, 159, 72)';
+          bgColor = `rgba(${maxColour.r}, ${maxColour.g}, ${maxColour.b}, 0.5)`;
+          borderColor = `rgb(${maxColour.r}, ${maxColour.g}, ${maxColour.b})`;
         }
+        // if (renderRow.netWorth <= 100000) {
+        //   bgColor = 'rgba(239, 48, 34, 0.5)';
+        //   borderColor = 'rgba(239, 48, 34)';
+        // } else if (renderRow.netWorth < 200000) {
+        //   bgColor = 'rgba(253, 202, 53, 0.5)';
+        //   borderColor = 'rgba(253, 202, 53)';
+        // } else {
+        //   bgColor = 'rgba(58, 159, 72, 0.5)';
+        //   borderColor = 'rgba(58, 159, 72)';
+        // }
         element.style.backgroundColor = bgColor;
         element.style.border = '1px solid ' + borderColor;
 
@@ -371,5 +408,23 @@ button:hover {
 button:active {
   color: #000000;
   background-color: rgba(255, 255, 255, 0.75);
+}
+
+#legend {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.legend-gradient {
+  width: 100%;
+  height: 20px;
+  color: #000000;
+  background: linear-gradient(to right, #EF3022, #FDCA35, #3A9F48);
+  margin-bottom: 5px;
+}
+
+.legend-labels {
+  display: flex;
+  justify-content: space-between;
 }
 </style>
