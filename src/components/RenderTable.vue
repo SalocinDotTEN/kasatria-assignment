@@ -57,7 +57,7 @@ export default defineComponent({
 
         sheetData.value = rows.map(row => ({
           name: row.get('Name') || '',
-          photo: row.get('Photo') || '',
+          photo: row.get('Photo') || 'https://www.kasatria.com/img/favicon/favicon-32x32.png',
           age: row.get('Age') || '',
           country: row.get('Country') || '',
           interest: row.get('Interest') || '',
@@ -75,18 +75,16 @@ export default defineComponent({
 
     onMounted(() => {
       fetchSheetData().then((data) => {
-        tbl = data
+        // tbl = data
+        init(data);
       }).catch((err) => {
         console.error(err)
       })
       // fetchSheetData();
-      init();
       animate();
     });
 
-    console.log(sheetData.value)
-
-    function init() {
+    function init(tableInput = []) {
       camera.value = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 1, 10000);
       camera.value.position.z = 3000;
 
@@ -94,25 +92,45 @@ export default defineComponent({
 
       // table
 
-      for (let i = 0; i < table.value.length; i += 5) {
+      tableInput.forEach((renderRow, i) => {
+
+        console.log('Net worth: ', renderRow.netWorth)
 
         const element = document.createElement('div');
         element.className = 'element';
-        element.style.backgroundColor = 'rgba(0,127,127,' + (Math.random() * 0.5 + 0.25) + ')';
+        let bgColor, borderColor;
+        if (renderRow.netWorth <= 100000) {
+          bgColor = 'rgba(239, 48, 34, 0.5)';
+          borderColor = 'rgba(239, 48, 34)';
+        } else if (renderRow.netWorth < 200000) {
+          bgColor = 'rgba(253, 202, 53, 0.5)';
+          borderColor = 'rgba(253, 202, 53)';
+        } else {
+          bgColor = 'rgba(58, 159, 72, 0.5)';
+          borderColor = 'rgba(58, 159, 72)';
+        }
+        // element.style.backgroundColor = 'rgba(0,127,127,' + (Math.random() * 0.5 + 0.25) + ')';
+        element.style.backgroundColor = bgColor;
+        element.style.border = '1px solid ' + borderColor;
+
+        const country = document.createElement('div');
+        country.className = 'country';
+        country.textContent = renderRow.country;
+        element.appendChild(country);
 
         const number = document.createElement('div');
         number.className = 'age';
-        number.textContent = ((i / 5) + 1).toString();
+        number.textContent = renderRow.age.toString();
         element.appendChild(number);
 
         const symbol = document.createElement('div');
         symbol.className = 'photo';
-        symbol.textContent = String(table[i]);
+        symbol.innerHTML = '<img src="' + String(renderRow.photo) + '" style="width:80px; height: 80px;"/>';
         element.appendChild(symbol);
 
         const details = document.createElement('div');
         details.className = 'name-interest';
-        details.innerHTML = '<b>' + table[i + 1] + '</b><br>' + table[i + 2];
+        details.innerHTML = '<b>' + renderRow.name + '</b><br>' + renderRow.interest;
         element.appendChild(details);
 
         const objectCSS = new CSS3DObject(element);
@@ -132,7 +150,7 @@ export default defineComponent({
 
         targets.table.push(object);
 
-      }
+      })
 
       // sphere
 
@@ -298,6 +316,12 @@ a {
   box-shadow: 0px 0px 12px rgba(255, 255, 255, 0.801);
   border: 1px solid rgba(255, 255, 255, 0.75);
 }
+.element .country {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  font-size: 12px;
+}
 
 .element .age {
   position: absolute;
@@ -308,8 +332,8 @@ a {
 
 .element .photo {
   position: absolute;
-  height: 60px;
-  top: 40px;
+  height: 80px;
+  top: 30px;
   left: 0px;
   right: 0px;
   font-size: 60px;
