@@ -1,8 +1,15 @@
 <template>
   <v-container class="fill-height">
     <v-responsive class="align-center fill-height mx-auto">
-      <div v-if="!user">
+      <div
+        v-if="!user"
+        class="text-center"
+      >
+        <h1>Kasatria Developer Test</h1>
+        <h2>By Nicolas Y.</h2>
+        <p>You must login with Google to continue. If you can't login, please let me know.</p>
         <v-btn
+          class="mt-5"
           color="primary"
           @click="login"
         >
@@ -10,7 +17,13 @@
         </v-btn>
       </div>
       <div v-else>
-        <div id="container" />
+        <p class="text-center">
+          If this does not load, please force refresh and login again.
+        </p>
+        <div
+          id="container"
+          class="align-center text-center w-100"
+        />
         <div id="menu">
           <v-btn @click="transform(targets.table, 2000)">
             TABLE
